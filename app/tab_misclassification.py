@@ -20,7 +20,7 @@ from app_data import getAppData
 filepath="/home/jupyter/train-CLIP-FT/app/misclassifications_ET90_SN1.csv"
 gap=getAppData()
 df_out=gap.get_table_data(filepath)
-
+feedback_file="Feedback.csv"
 
 
 misclassification_content = dbc.Container(
@@ -28,34 +28,19 @@ misclassification_content = dbc.Container(
         html.H1(children="Analyze Misclassifications"),
         html.Br(),
         dbc.Table.from_dataframe(df_out, striped=True, bordered=True, hover=True, responsive="lg",size="lg",style = {'margin-right':'10px','margin-left':'10px'})
-        
+
     ]
 )
 
-def get_misclassification_content(df):
-    misclassification_content = dbc.Container(
-        [
-            html.H1(children="Analyze Misclassifications"),
-            html.Br(),
-            dbc.Table.from_dataframe(df, striped=True, bordered=True, hover=True, responsive="lg",size="lg",style = {'margin-right':'10px','margin-left':'10px'})
-        ]
-    )
-    return misclassification_content
 
-
-@app.callback(
-    Output("radio_button_id_out","children"),
-    [Input("feedback_radio_id","value")
-    Input("feedback_radio_id","value")]
-)
+@app.callback(Output("radio_button_id_out","children"),[Input("feedback_radio_id","value")])
 def listen_radio_buttons(value):
     """
     This callback takes in page2-buttons selected value and returns content to display
     in selected-button
     """
-    row_id= value.split('_')[0]
-    feedback = value.split('_')[1]
-    df=pd.read_csv(filepath)
-    df.loc[df["feedback"]==feedback,["count"]]+=1
-    
-    return
+    row_id, feedback= value.split('_')
+    row=df_out.iloc[row_id]
+    row["feedback"]=feedback
+    row.to_csv(feedback_file, mode="a", index=False, header=os.path.exists(feedback_file))
+    return 
