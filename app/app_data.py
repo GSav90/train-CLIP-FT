@@ -16,7 +16,7 @@ from dash.dependencies import Input, Output, State
 
 @dataclass
 class getAppDataThreshold:
-    batch_size= 20
+    batch_size= 10
     prediction_images=5
 
 class getAppData:
@@ -34,6 +34,7 @@ class getAppData:
         batch_size=batch_size
         for idx,prow in df.iloc[0:batch_size].iterrows():
             true_gtin_name, predicted_gtin_name, true_img_thumbnail, prediction_thumnails= self.get_misclassifications(prow,pred_img_count)
+            feedback,fid=self.add_radioitems(idx)
             row= {"true_img_thumbnail": true_img_thumbnail,\
                 "true_gtin_name": true_gtin_name, 
                 "predicted_gtin_name": predicted_gtin_name,\
@@ -43,13 +44,14 @@ class getAppData:
                     "pred_sample_4": prediction_thumnails[3],
                     "pred_sample_5": prediction_thumnails[4],
                     "Refresh": html.A(html.Button('Refresh'),href='/'),
-                    "Feedback": self.add_radioitems(idx)
+                    "Feedback": feedback,
+                    "fid": fid
                     }
             
             df_out=df_out.append(row,ignore_index=True)
             
         return df_out
-    def add_dropdown(idx):
+    def add_dropdown(self,idx):
         return dbc.DropdownMenu(label=str(idx),id=f"id_{str(idx)}",children=[
                     dbc.DropdownMenuItem("GTIN Incorrectly labeled"),
                     dbc.DropdownMenuItem("Cleanup Enrollment Images"),
@@ -61,16 +63,17 @@ class getAppData:
     def add_radioitems(self,idx,drop_lst=None):
         if not drop_lst:
             drop_lst=self.dropdown_labels
+        radio_id=f'fid_{str(idx)}'
         return dbc.Col(
-                                [
-                                    dcc.RadioItems(
-                                                    id='feedback_radio_id',
-                                                    options = [
-                                                        {'label':'{}'.format(i), 'value': f"{str(idx)}_{i}"} for i in drop_lst
-                                                    ]
-                                                    ),
-                                    html.Div(id='radio_button_id_out')
-                                ],
+                            [
+                                dcc.RadioItems(
+                                                id=radio_id,
+                                                options = [
+                                                    {'label':'{}'.format(i), 'value':'{}'.format(i) } for i in drop_lst
+                                                ]
+                                                ),
+                                html.Div(id='radio_button_id_out')
+                            ],radio_id
         )
     def get_misclassifications(self,row,pred_img_count):
     

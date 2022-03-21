@@ -13,17 +13,9 @@ import dash_core_components as dcc
 import dash_html_components as html
 
 from dash.dependencies import Input, Output, State
-from layouts import misclassification_content,summary_content
-# from dash_colorgrading import discrete_background_color_bins
-
-# external_stylesheets =[dbc.themes.BOOTSTRAP] # ["https://codepen.io/chriddyp/pen/bWLwgP.css"]
-# app = dash.Dash(__name__, external_stylesheets=external_stylesheets)
-app = dash.Dash(external_stylesheets=[dbc.themes.PULSE])
-# (color_grading_styles, legend) = discrete_background_color_bins(df, columns=cols)
-# image_filename = "/Users/g0s00lq/Documents/Github_new/self_experiments/code_samples/catalog_data/00011115871324/0a439101-7fc7-4e38-a983-2656e92cafa8_1.f69ff07a5afdb36c60b81a40a3e98442.jpeg"  # replace with your own image
-# encoded_image = base64.b64encode(open(image_filename, "rb").read())
-
-# app.layout = html.Div([html.Img(src=f"data:image/png;base64,{encoded_image.decode()}")])
+from tab_misclassification import misclassification_content
+from tab_summary import summary_content
+from maindash import app
 
 
 
@@ -45,9 +37,10 @@ app.layout = dbc.Container(
     ]
 )
 
+
 @app.callback(
     Output("tab-content", "children"),
-    [Input("tabs", "active_tab")],
+    [Input("tabs", "active_tab")]
 )
 def render_tab_content(active_tab):
     """
@@ -59,8 +52,7 @@ def render_tab_content(active_tab):
         return misclassification_content
     elif active_tab == "summary_id":
         return summary_content
-    return "No tab selected"
-
+    return "No tab selected"    
 
     
     
@@ -84,3 +76,5 @@ if __name__ == "__main__":
     app.server.run(port=8000, host="127.0.0.1", debug=True)
 
     
+    ## port forwarding to local
+#     gcloud compute ssh gaurav.savlani@enrollment-eval-v3 --project wmt-892b8050ebef7b873b51427a84 --tunnel-through-iap  --zone "us-west1-b" -- -NL 8000:localhost:8000

@@ -13,8 +13,6 @@ import dash_core_components as dcc
 import dash_html_components as html
 
 from dash.dependencies import Input, Output, State
-
-from utils import generate_thumbnail, get_n_thumbnail_from_folder,get_misclassifications,add_dropdown,add_radioitems
 import plotly.graph_objects as go
 import plotly.express as px
 
@@ -29,11 +27,11 @@ import plotly.express as px
 ############Summary metrics ############
 ########################################
 
-def get_summary_metrics(summary_df,drop_lst):
-    if summary_df.shape[0]==0:
-        summary_df=pd.DataFrame({"feedback": drop_list, "count":[0]*len(drop_lst)})
-    fig=px.bar(summary_df, x='feedback', y='count',orientation='h')
-    return fig
+# def get_summary_metrics(summary_df,drop_lst):
+#     if summary_df.shape[0]==0:
+#         summary_df=pd.DataFrame({"feedback": drop_list, "count":[0]*len(drop_lst)})
+#     fig=px.bar(summary_df, x='feedback', y='count',orientation='h')
+#     return fig
     
 
 
@@ -41,7 +39,7 @@ summary_content = dbc.Container(
     [
         html.H1(children="Summary Metrics"),
         html.Br(),
-        html.Div([dcc.Graph(figure=get_summary_metrics())])
+        # html.Div([dcc.Graph(figure=get_summary_metrics())])
         
     ]
 )

@@ -42,15 +42,14 @@ app.layout = dbc.Container(
     Output("tab-content", "children"),
     [Input("tabs", "active_tab")]
 )
-def render_tab_content(active_tab,data):
+def render_tab_content(active_tab):
     """
     This callback takes the 'active_tab' property as input, as well as the
     stored graphs, and renders the tab content depending on what the value of
     'active_tab' is.
     """
     if active_tab == "misclassification_id":
-        if "misclassification" in data:
-            return misclassification_content
+        return misclassification_content
     elif active_tab == "summary_id":
         return summary_content
     return "No tab selected"    
@@ -77,3 +76,9 @@ if __name__ == "__main__":
     app.server.run(port=8000, host="127.0.0.1", debug=True)
 
     
+    ## port forwarding to local
+#     gcloud compute ssh gaurav.savlani@enrollment-eval-v3 --project wmt-892b8050ebef7b873b51427a84 --tunnel-through-iap  --zone "us-west1-b" -- -NL 8000:localhost:8000
+
+"""
+Goal: Take user feedback based on the input chosen in dropdown menu
+    1 dropdown menu per row. 
