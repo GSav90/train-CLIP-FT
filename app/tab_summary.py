@@ -75,7 +75,7 @@ summary_content = dbc.Container(
                 dbc.Card(
                     dbc.CardBody(
                         [
-                            html.Div([dcc.Graph(id="summary_id_graph")]),
+                            html.Div([dcc.Graph(figure="summary_id_graph")]),
                             html.Button("Refresh", id="refresh_plot_id", n_clicks=0),
                             # dcc.Location(id="url_new", refresh=True),
                             
