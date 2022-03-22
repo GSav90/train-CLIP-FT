@@ -18,10 +18,22 @@ import plotly.express as px
 from maindash import app
     
 # external_stylesheets =[dbc.themes.LUX] # ["https://codepen.io/chriddyp/pen/bWLwgP.css"]
-# # app = dash.Dash(__name__)
+# app = dash.Dash(__name__)
 # app = dash.Dash(__name__, external_stylesheets=external_stylesheets)
 
-
+# feedback_file=os.path.join("/Users/g0s00lq/Documents/Github_new/NextGen/train-CLIP-FT/app","Feedback.csv")
+# # if not os.path.exists(feedback_file):
+# #     return {}
+# df = pd.read_csv(feedback_file)
+# grouped=df.groupby(["feedback"])["row_id"].count().reset_index()
+# fig = px.bar(grouped, x="feedback", y="row_id",color='feedback')#,color_discrete_sequence =['green']*len(grouped))
+# # fig.update_traces(marker_color='green')
+# fig.update_layout(
+#     title="Feedback Statistics",
+#     barmode="group",
+#     paper_bgcolor="rgb(255, 255, 255)",
+#     plot_bgcolor="rgb(255, 255, 255)",
+# )
     
 
 
@@ -66,61 +78,42 @@ def display_summary(id,desc, color="primary"):
             ),
         ]
     )
-summary_content = dbc.Container(
+summary_content= html.Div(
     [
         html.H1(children="Summary Metrics"),
         html.Br(),
-        ##html.Div([dcc.Graph(figure=get_summary_metrics())]),
-        dbc.Col(
-                dbc.Card(
-                    dbc.CardBody(
-                        [
-                            html.Div([dcc.Graph(figure="summary_id_graph")]),
-                            html.Button("Refresh", id="refresh_plot_id", n_clicks=0),
-                            # dcc.Location(id="url_new", refresh=True),
-                            
-                            # display_summary(
-                            #     "summary_id_graph",
-                            #     "Stats",
-                            #     "success",
-                            # ),
-                        ]
-                    )
-                ),
-                width=12)
-                # ,align="center"
+        #html.Div(id='summary_stats', children=dcc.Graph(id='dummy')),
+        html.Button("Refresh", id="refresh_plot_id", n_clicks=0),
+        html.Div(dcc.Graph(id="summary_stats")),
+        # dcc.Graph(id="summary_stats"),
+        
     ]
 )
 
 
 
 @app.callback(
-    Output("summary_id_graph", "children"),
+    Output("summary_stats", "figure"),
     Input('refresh_plot_id', 'n_clicks'),
 )
 def summary_tab_cont(nclick):
-    """
-    This callback takes the 'active_tab' property as input, as well as the
-    stored graphs, and renders the tab content depending on what the value of
-    'active_tab' is.
-    """
-    if nclick:
-        feedback_file=os.path.join("/Users/g0s00lq/Documents/Github_new/NextGen/train-CLIP-FT/app","Feedback.csv")
-        if not os.path.exists(feedback_file):
-            return {}
-        df = pd.read_csv(feedback_file)
-        grouped=df.groupby(["feedback"])["row_id"].count().reset_index()
-        fig = px.bar(grouped, x="feedback", y="row_id",color='feedback')#,color_discrete_sequence =['green']*len(grouped))
-        # fig.update_traces(marker_color='green')
-        fig.update_layout(
-            title="Feedback Statistics",
-            barmode="group",
-            paper_bgcolor="rgb(255, 255, 255)",
-            plot_bgcolor="rgb(255, 255, 255)",
-        )
-        return fig
-    
-    return "Click on refresh"
+    # if nclick>1:
+    feedback_file=os.path.join("/Users/g0s00lq/Documents/Github_new/NextGen/train-CLIP-FT/app","Feedback.csv")
+    if not os.path.exists(feedback_file):
+        return {}
+    df = pd.read_csv(feedback_file)
+    grouped=df.groupby(["feedback"])["row_id"].count().reset_index()
+    fig = px.bar(grouped, x="feedback", y="row_id",color='feedback')#,color_discrete_sequence =['green']*len(grouped))
+    # fig.update_traces(marker_color='green')
+    fig.update_layout(
+        title="Feedback Statistics",
+        barmode="group",
+        paper_bgcolor="rgb(255, 255, 255)",
+        plot_bgcolor="rgb(255, 255, 255)",
+    )
+    return fig
+    # else:
+    #     return {}
 
 # if __name__ == "__main__":
 #     feedback_file=os.path.join("/Users/g0s00lq/Documents/Github_new/NextGen/train-CLIP-FT/app","Feedback.csv")
