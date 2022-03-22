@@ -24,7 +24,7 @@ class getAppData:
 
     def __init__(self,dropdown_labels=None):
         if not dropdown_labels:
-            self.dropdown_labels=["GTIN Incorrectly labeled", "Cleanup Enrollment Images","Model Error","Multiple Items","Other"]
+            self.dropdown_labels=["GTIN Incorrectly labeled", "Cleanup Enrollment Images","Model Error","Multiple Items","Other",None]
         else:
             self.dropdown_labels= dropdown_labels
         
@@ -74,7 +74,7 @@ class getAppData:
                                     'index': idx
                                 },
                                 options=drop_lst,
-                                value="Other",
+                                value=None,
                                 clearable=False,
                             ),
                             html.Div(

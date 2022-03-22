@@ -19,10 +19,10 @@ from app_data import getAppData
 from dash import dcc, html, Input, Output, callback, ALL, MATCH
 import json
 
-feedback_file=os.path.join("/Users/g0s00lq/Documents/Github_new/NextGen/train-CLIP-FT/app","Feedback.txt")
+feedback_file=os.path.join("/Users/g0s00lq/Documents/Github_new/NextGen/train-CLIP-FT/app","Feedback.csv")
 filepath=os.path.join(os.getcwd(),"misclassifications_ET90_SN1.csv")
 gap=getAppData()
-dropdown_labels=["GTIN Incorrectly labeled", "Cleanup Enrollment Images","Model Error","Multiple Items","Other"]
+dropdown_labels=["GTIN Incorrectly labeled", "Cleanup Enrollment Images","Model Error","Multiple Items","Other",None]
 
 # misclassification_content = html.Div([
 #     html.Button("Add Filter", id="dynamic-add-filter", n_clicks=0),
@@ -42,21 +42,27 @@ misclassification_content =  html.Div([
     Input('dynamic-add-filter', 'n_clicks'),
     State('dynamic-dropdown-container', 'children'))
 def display_dropdowns(n_clicks, children):
-    new_element = html.Div([
-        dcc.Dropdown(
-           dropdown_labels,
-            id={
-                'type': 'dynamic-dropdown',
-                'index': n_clicks
-            }
-        ),
-        html.Div(
+    new_element =html.Div(
             id={
                 'type': 'dynamic-output',
                 'index': n_clicks
             }
         )
-    ])
+    # new_element = html.Div([
+    #     dcc.Dropdown(
+    #        dropdown_labels,
+    #         id={
+    #             'type': 'dynamic-dropdown',
+    #             'index': n_clicks
+    #         }
+    #     ),
+    #     html.Div(
+    #         id={
+    #             'type': 'dynamic-output',
+    #             'index': n_clicks
+    #         }
+    #     )
+    # ])
     children.append(new_element)
     return children
 
@@ -64,18 +70,28 @@ def display_dropdowns(n_clicks, children):
 @app.callback(
     Output({'type': 'dynamic-output', 'index': MATCH}, 'children'),
     Input({'type': 'dynamic-dropdown', 'index': MATCH}, 'value'),
+    Input('dynamic-add-filter', 'n_clicks'),
     State({'type': 'dynamic-dropdown', 'index': MATCH}, 'id'),
 )
-def display_output(value, id):
-
-    return html.Div('Feedback for row {} = {}'.format(id['index'], value))
+def display_output(value, clicker,id):
+    row={"row_id": id['index'],"feedback": value}
+    df=pd.DataFrame.from_records([row])
+    if row["feedback"] and "id_" in row["row_id"]:
+        df.to_csv(feedback_file,mode="a",header=not os.path.exists(feedback_file),index=False)
+    
+    return html.Div('Feedback {}'.format(value))
 
 @app.callback(
     Output('tbl-output', 'children'),
     Input('dynamic-add-filter', 'n_clicks'),
     State('dynamic-dropdown-container', 'children'))
 def add_tbl_row(n_clicks, children):
-    df_out=gap.get_table_data(filepath,n_clicks,n_clicks+4)
+    if n_clicks:
+        start=((n_clicks+1)*5)-5
+    else:
+        start=n_clicks
+    end=start+4
+    df_out=gap.get_table_data(filepath,start,end)
     return dbc.Table.from_dataframe(df_out, striped=True, bordered=True, hover=True, responsive="lg",size="lg",style = {'margin-right':'2px','margin-left':'2px'})
 
 
