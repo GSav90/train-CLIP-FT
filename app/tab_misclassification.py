@@ -30,17 +30,16 @@ gap=getAppData()
 # ])
 
 misclassification_content = html.Div([
-    html.Br(),
-    html.Div(id='dropdown-container-output'),
+    # html.Div(id='dropdown-container-output'),
     html.Br(),
     dbc.Button("Add batch",
                 id="add_batch_id",
                 color="success",
                 className="me-1"),
-    dbc.Button("Submit",
-                id="submit_button_id",
-                color="success",
-                className="me-1"),
+    # dbc.Button("Submit",
+    #             id="submit_button_id",
+    #             color="success",
+    #             className="me-1"),
     html.Div(id='dropdown-container', children=[]),
     html.Div(id='dbc-table-output'),
 ])
@@ -66,18 +65,19 @@ start=0
 
 @app.callback(
     Output('dropdown-container', 'children'),
-    Input('submit_button_id', 'n_clicks'),
+    # Input('submit_button_id', 'n_clicks'),
     Input('add_batch_id', 'n_clicks'),
     State('dropdown-container', 'children'))
-def display_dropdowns(submit_click,add_batch, children):
+def display_dropdown_buttons(add_batch, children):
     if add_batch:
         st=(add_batch*10)-10
     else:
         st=start
     end=st+10
     df_out=gap.get_table_data(filepath,st,end)
-    new_children= df_out["Feedback"].tolist()
-    children.append(new_children)
+    for elem in df_out["Feedback"].tolist():
+        children.append(elem)
+    
     return children
 
 @app.callback(
@@ -104,20 +104,39 @@ def display_dropdowns(add_batch, children):
     #     )
     return dbc.Table.from_dataframe(df_out, striped=True, bordered=True, hover=True, responsive="lg",size="lg",style = {'margin-right':'2px','margin-left':'2px'})
 
-
 @app.callback(
-    Output('dropdown-container-output', 'children'),
-    Input({'type': 'filter-dropdown', 'index': ALL}, 'value'),
+    Output({'type': 'dynamic-output', 'index': MATCH}, 'children'),
+    Input({'type': 'dynamic-dropdown', 'index': MATCH}, 'value'),
+    State({'type': 'dynamic-dropdown', 'index': MATCH}, 'id'),
 )
-def display_output(values):
-    for (i, value) in enumerate(values):
-        with open(feedback_file,"a") as f:
-            f.write(f"{i},{value}")
-    #return f"Printing text {values}"
-    return html.Div([
-        html.Div('Dropdown {} = {}'.format(i + 1, value))
-        for (i, value) in enumerate(values)
-    ])
+def display_output(value, id):
+    ctx = dash.callback_context
+
+    if not ctx.triggered:
+        button_id = "No clicks yet"
+    else:
+        button_id = ctx.triggered[0]["prop_id"].split(".")[0]
+    ctx_msg = json.dumps(
+        {"states": ctx.states, "triggered": ctx.triggered, "inputs": ctx.inputs},
+        indent=4,
+    )
+    with open(feedback_file,"a") as f:
+        f.write(ctx_msg)
+    return html.Div('Dropdown {} = {}'.format(id, value))
+
+# @app.callback(
+#     Output('dropdown-container-output', 'children'),
+#     Input({'type': 'filter-dropdown', 'index': ALL}, 'value'),
+# )
+# def display_output(values):
+#     for (i, value) in enumerate(values):
+#         with open(feedback_file,"a") as f:
+#             f.write(f"{i},{value}")
+#     #return f"Printing text {values}"
+#     return html.Div([
+#         html.Div('Dropdown {} = {}'.format(i + 1, value))
+#         for (i, value) in enumerate(values)
+#     ])
 
 
 # @app.callback(

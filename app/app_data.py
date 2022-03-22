@@ -57,15 +57,35 @@ class getAppData:
     def add_dropdown_dcc(self,idx,drop_lst=None):
         if not drop_lst:
             drop_lst=self.dropdown_labels
-        return dcc.Dropdown(
-            id={
-                'type': 'feedback-dropdown',
-                'index': idx
-            },
-            options=drop_lst,
-            value="Other",
-            #clearable=False,
-        )
+
+        # new_elem=dcc.Dropdown(
+        #                         id={
+        #                             'type': 'dynamic-dropdown',
+        #                             'index': idx
+        #                         },
+        #                         options=drop_lst,
+        #                         value="Other",
+        #                         #clearable=False,
+        #                     ),
+        new_elem= html.Div([
+                            dcc.Dropdown(
+                                id={
+                                    'type': 'dynamic-dropdown',
+                                    'index': idx
+                                },
+                                options=drop_lst,
+                                value="Other",
+                                #clearable=False,
+                            ),
+                            html.Div(
+                                id={
+                                    'type': 'dynamic-output',
+                                    'index': idx
+                                }
+                            )
+                        ])
+        
+        return new_elem
         
       
     def add_dropdown(self,idx):
