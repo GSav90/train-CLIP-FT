@@ -22,7 +22,9 @@ import json
 feedback_file=os.path.join("/Users/g0s00lq/Documents/Github_new/NextGen/train-CLIP-FT/app","Feedback.csv")
 filepath=os.path.join(os.getcwd(),"misclassifications_ET90_SN1.csv")
 gap=getAppData()
-dropdown_labels=["GTIN Incorrectly labeled", "Cleanup Enrollment Images","Model Error","Multiple Items","Other",None]
+dropdown_labels=["GTIN Incorrectly labeled", "Cleanup Enrollment Images","Model Error","Multiple Items",None]
+num_rows=4
+full_df=pd.read_csv(filepath)
 
 # misclassification_content = html.Div([
 #     html.Button("Add Filter", id="dynamic-add-filter", n_clicks=0),
@@ -87,12 +89,16 @@ def display_output(value, clicker,id):
     State('dynamic-dropdown-container', 'children'))
 def add_tbl_row(n_clicks, children):
     if n_clicks:
-        start=((n_clicks+1)*5)-5
+        start=((n_clicks+1)*num_rows)-num_rows
     else:
         start=n_clicks
-    end=start+4
+    end=start+(num_rows-1)
     df_out=gap.get_table_data(filepath,start,end)
-    return dbc.Table.from_dataframe(df_out, striped=True, bordered=True, hover=True, responsive="lg",size="lg",style = {'margin-right':'2px','margin-left':'2px'})
+    if end>full_df.shape[0]:
+        df_out=pd.DataFrame()
+    else:
+        df_out=df_out
+    return dbc.Table.from_dataframe(df_out, striped=True, bordered=True, hover=True, responsive="lg",size="lg",style = {'margin-right':'2px'})
 
 
 # @app.callback(

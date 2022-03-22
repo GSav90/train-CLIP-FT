@@ -24,7 +24,7 @@ class getAppData:
 
     def __init__(self,dropdown_labels=None):
         if not dropdown_labels:
-            self.dropdown_labels=["GTIN Incorrectly labeled", "Cleanup Enrollment Images","Model Error","Multiple Items","Other",None]
+            self.dropdown_labels=["GTIN Incorrectly labeled", "Cleanup Enrollment Images","Model Error","Multiple Items",None]
         else:
             self.dropdown_labels= dropdown_labels
         
@@ -67,16 +67,33 @@ class getAppData:
         #                         value="Other",
         #                         #clearable=False,
         #                     ),
+        # new_elem= html.Div([
+        #                     dcc.Dropdown(
+        #                         id={
+        #                             'type': 'dynamic-dropdown',
+        #                             'index': idx
+        #                         },
+        #                         options=drop_lst,
+        #                         value=None,
+        #                         clearable=False,
+        #                     ),
+        #                     html.Div(
+        #                         id={
+        #                             'type': 'dynamic-output',
+        #                             'index': idx
+        #                         }
+        #                     )
+        #                 ])
         new_elem= html.Div([
-                            dcc.Dropdown(
-                                id={
+                            dcc.RadioItems(
+                        id={
                                     'type': 'dynamic-dropdown',
                                     'index': idx
                                 },
-                                options=drop_lst,
-                                value=None,
-                                clearable=False,
-                            ),
+                        options = drop_lst,
+                        value=None
+                        ),
+                        html.Br(),
                             html.Div(
                                 id={
                                     'type': 'dynamic-output',
@@ -85,6 +102,7 @@ class getAppData:
                             )
                         ])
         
+
         return new_elem
         
       
@@ -110,7 +128,7 @@ class getAppData:
                                                 ]
                                                 ),
                                 html.Div(id='radio_button_id_out')
-                            ],radio_id
+                            ]
         )
     def get_misclassifications(self,row,pred_img_count):
     
@@ -165,4 +183,5 @@ class getAppData:
             images_div.append(self.generate_thumbnail(encoded_image))
         return images_div
 
-    
+
+

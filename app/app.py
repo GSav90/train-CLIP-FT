@@ -17,28 +17,45 @@ from tab_misclassification import misclassification_content
 from tab_summary import summary_content
 from maindash import app
 
+navbar = dbc.NavbarSimple(
+    children=[
+        dbc.NavItem(dbc.NavLink("Feedback", href="/feedback", id="feedback_page_id")),
+        dbc.NavItem(dbc.NavLink("Summary", href="/summary", id="summary_page_id")),
+    ],
+    brand="NextGen Misclassifications",
+    brand_href="/feedback",
+    color="dark",
+    dark=True,
+    links_left=True,
+)
 
-
-app.layout = dbc.Container(
+app.layout = html.Div(
     [
-        dcc.Store(id="store"),
-        # html.H1("Classification Evaluation"),
-        dbc.Tabs(
-            [
-                dbc.Tab(label="Analyze Misclassifications", tab_id="misclassification_id"),
-                dbc.Tab(label="Summary Metrics", tab_id="summary_id"),
-            ],
-            id="tabs",
-            active_tab="misclassification_id",
-        ),
-        html.Div(id="tab-content", className="p-4"),
+        navbar,
+        html.Div(id="content"),
+        dcc.Location(id="url", refresh=False),
     ]
 )
+# app.layout = dbc.Container(
+#     [
+#         dcc.Store(id="store"),
+#         # html.H1("Classification Evaluation"),
+#         dbc.Tabs(
+#             [
+#                 dbc.Tab(label="Analyze Misclassifications", tab_id="misclassification_id"),
+#                 dbc.Tab(label="Summary Metrics", tab_id="summary_id"),
+#             ],
+#             id="tabs",
+#             active_tab="misclassification_id",
+#         ),
+#         html.Div(id="tab-content", className="p-4"),
+#     ]
+# )
 
 
 @app.callback(
-    Output("tab-content", "children"),
-    [Input("tabs", "active_tab")]
+    Output("content", "children"),
+    [Input("url", "pathname")],
 )
 def render_tab_content(active_tab):
     """
@@ -46,9 +63,9 @@ def render_tab_content(active_tab):
     stored graphs, and renders the tab content depending on what the value of
     'active_tab' is.
     """
-    if active_tab == "misclassification_id":
+    if active_tab == "/feedback":
         return misclassification_content
-    elif active_tab == "summary_id":
+    elif active_tab == "/summary":
         return summary_content
     return "No tab selected"    
 
