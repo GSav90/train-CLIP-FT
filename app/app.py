@@ -3,7 +3,7 @@ from dash import html
 import base64
 import os
 from pprintpp import pprint
-from inference_clip import clip_inference
+# from inference_clip import clip_inference
 import pandas as pd
 import random
 import dash_html_components as html
@@ -22,9 +22,7 @@ from maindash import app
 app.layout = dbc.Container(
     [
         dcc.Store(id="store"),
-        html.H1("Classification Evaluation"),
-        html.Hr(),
-        
+        # html.H1("Classification Evaluation"),
         dbc.Tabs(
             [
                 dbc.Tab(label="Analyze Misclassifications", tab_id="misclassification_id"),
@@ -82,3 +80,4 @@ if __name__ == "__main__":
 """
 Goal: Take user feedback based on the input chosen in dropdown menu
     1 dropdown menu per row. 
+    """

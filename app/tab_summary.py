@@ -3,7 +3,7 @@ from dash import html
 import base64
 import os
 from pprintpp import pprint
-from inference_clip import clip_inference
+#from inference_clip import clip_inference
 import pandas as pd
 import random
 import dash_html_components as html
