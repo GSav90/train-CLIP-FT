@@ -75,7 +75,7 @@ class getAppData:
                                 },
                                 options=drop_lst,
                                 value="Other",
-                                #clearable=False,
+                                clearable=False,
                             ),
                             html.Div(
                                 id={

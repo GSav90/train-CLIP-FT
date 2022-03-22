@@ -1,3 +1,4 @@
+from statistics import mode
 import dash
 from dash import html
 import base64
@@ -29,51 +30,91 @@ dropdown_labels=["GTIN Incorrectly labeled", "Cleanup Enrollment Images","Model 
 #     dbc.Table.from_dataframe(df_out, striped=True, bordered=True, hover=True, responsive="lg",size="lg",style = {'margin-right':'2px','margin-left':'2px'}),
 # ])
 
-misclassification_content = html.Div([
-    # html.Div(id='dropdown-container-output'),
-    html.Button("Add Row", id="add-filter", n_clicks=0),
-    html.Div(id='dropdown-container', children=[]),
-    html.Div(id='dropdown-container-output'),
-    html.Div(id='tbl-output')
+misclassification_content =  html.Div([
+    html.Button("Add Batch", id="dynamic-add-filter", n_clicks=0),
+    html.Div(id='dynamic-dropdown-container', children=[]),
+    html.Div(id='tbl-output'),
+
 ])
+
+@app.callback(
+    Output('dynamic-dropdown-container', 'children'),
+    Input('dynamic-add-filter', 'n_clicks'),
+    State('dynamic-dropdown-container', 'children'))
+def display_dropdowns(n_clicks, children):
+    new_element = html.Div([
+        dcc.Dropdown(
+           dropdown_labels,
+            id={
+                'type': 'dynamic-dropdown',
+                'index': n_clicks
+            }
+        ),
+        html.Div(
+            id={
+                'type': 'dynamic-output',
+                'index': n_clicks
+            }
+        )
+    ])
+    children.append(new_element)
+    return children
 
 
 @app.callback(
-    Output('dropdown-container', 'children'),
-    Input('add-filter', 'n_clicks'),
-    State('dropdown-container', 'children'))
-def display_dropdowns(n_clicks, children):
-    new_dropdown = dcc.Dropdown(
-        dropdown_labels,
-        id={
-            'type': 'filter-dropdown',
-            'index': n_clicks
-        }
-    )
-    children.append(new_dropdown)
-    return children
+    Output({'type': 'dynamic-output', 'index': MATCH}, 'children'),
+    Input({'type': 'dynamic-dropdown', 'index': MATCH}, 'value'),
+    State({'type': 'dynamic-dropdown', 'index': MATCH}, 'id'),
+)
+def display_output(value, id):
+
+    return html.Div('Feedback for row {} = {}'.format(id['index'], value))
 
 @app.callback(
     Output('tbl-output', 'children'),
-    Input('add-filter', 'n_clicks'),
-    State('dropdown-container', 'children'))
+    Input('dynamic-add-filter', 'n_clicks'),
+    State('dynamic-dropdown-container', 'children'))
 def add_tbl_row(n_clicks, children):
-    df_out=gap.get_table_data(filepath,n_clicks,n_clicks)
+    df_out=gap.get_table_data(filepath,n_clicks,n_clicks+4)
     return dbc.Table.from_dataframe(df_out, striped=True, bordered=True, hover=True, responsive="lg",size="lg",style = {'margin-right':'2px','margin-left':'2px'})
 
-@app.callback(
-    Output('dropdown-container-output', 'children'),
-    Input({'type': 'filter-dropdown', 'index': ALL}, 'value')
-)
-def display_output(values):
-    return html.Div([
-        html.Div('Dropdown {} = {}'.format(i + 1, value))
-        for (i, value) in enumerate(values)
-    ])
+
+# @app.callback(
+#     Output('dropdown-container', 'children'),
+#     Input('add-filter', 'n_clicks'),
+#     State('dropdown-container', 'children'))
+# def display_dropdowns(n_clicks, children):
+#     new_dropdown = dcc.Dropdown(
+#         dropdown_labels,
+#         id={
+#             'type': 'filter-dropdown',
+#             'index': n_clicks
+#         }
+#     )
+#     children.append(new_dropdown)
+#     return children
+
+# @app.callback(
+#     Output('tbl-output', 'children'),
+#     Input('add-filter', 'n_clicks'),
+#     State('dropdown-container', 'children'))
+# def add_tbl_row(n_clicks, children):
+#     df_out=gap.get_table_data(filepath,n_clicks,n_clicks)
+#     return dbc.Table.from_dataframe(df_out, striped=True, bordered=True, hover=True, responsive="lg",size="lg",style = {'margin-right':'2px','margin-left':'2px'})
+
+# @app.callback(
+#     Output('dropdown-container-output', 'children'),
+#     Input({'type': 'filter-dropdown', 'index': ALL}, 'value')
+# )
+# def display_output(values):
+#     return html.Div([
+#         html.Div('Feedback {} = {}'.format(i + 1, value))
+#         for (i, value) in enumerate(values)
+#     ])
 
 
-if __name__ == '__main__':
-    app.run_server(debug=True)
+# if __name__ == '__main__':
+#     app.run_server(debug=True)
 
 # start=0
 # # misclassification_content = html.Div(
